@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Http\Filters\V1\TicketFilter;
 use App\Models\Ticket;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\StoreTicketRequest;
 use App\Http\Requests\API\V1\UpdateTicketRequest;
 use App\Http\Resources\V1\TicketResource;
 
-class TicketController extends Controller
+class TicketController extends ApiController
 {
 
-    public function index()
+    public function index(TicketFilter $filters)
     {
-        return TicketResource::collection(Ticket::all());
+        return TicketResource::collection(Ticket::filter($filters)->paginate());
+        // if($this->include('author')) {
+        //     return TicketResource::collection(Ticket::with(['user'])->paginate());
+        // }
+
+        // return TicketResource::collection(Ticket::paginate());
     }
 
     public function store(StoreTicketRequest $request)
@@ -23,6 +28,9 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket)
     {
+        if($this->include('author')) {
+            return new TicketResource($ticket->load('user'));
+        }
         return new TicketResource($ticket);
     }
 
