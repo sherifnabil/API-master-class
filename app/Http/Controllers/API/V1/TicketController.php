@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Filters\V1\TicketFilter;
+use App\Http\Requests\API\V1\ReplaceTicketRequest;
 use App\Models\Ticket;
 use App\Http\Requests\API\V1\StoreTicketRequest;
 use App\Http\Requests\API\V1\UpdateTicketRequest;
 use App\Http\Resources\V1\TicketResource;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,17 +21,7 @@ class TicketController extends ApiController
 
     public function store(StoreTicketRequest $request): JsonResource|JsonResponse
     {
-        $user = User::findOrFail($request->input('data.relationships.author.data.id'));
-
-        $model = [
-            'title' =>  $request->input('data.attributes.title'),
-            'description' =>  $request->input('data.attributes.description'),
-            'status' =>  $request->input('data.attributes.status'),
-            'user_id' => $user->id,
-        ];
-
-        $ticket = Ticket::create($model);
-
+        $ticket = Ticket::create($request->mappedAttributes());
         return new TicketResource($ticket);
     }
 
@@ -45,7 +35,14 @@ class TicketController extends ApiController
 
     public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
-        //
+        $ticket->update($request->mappedAttributes());
+        return new TicketResource($ticket);
+    }
+
+    public function replace(ReplaceTicketRequest $request, Ticket $ticket)
+    {
+        $ticket->update($request->mappedAttributes());
+        return new TicketResource($ticket);
     }
 
     public function destroy(Ticket $ticket)
