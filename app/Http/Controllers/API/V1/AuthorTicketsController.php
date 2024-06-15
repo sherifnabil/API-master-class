@@ -25,31 +25,31 @@ class AuthorTicketsController extends ApiController
 
     public function store($author_id, StoreTicketRequest $request): JsonResource|JsonResponse
     {
+        $this->isAble('store', Ticket::class);
+
         $ticket = Ticket::create($request->mappedAttributes());
         return new TicketResource($ticket);
     }
 
     public function replace(ReplaceTicketRequest $request, $author_id, Ticket $ticket)
     {
-        if($ticket->user_id != $author_id) {
-            return $this->error('Ticket cannot found.', 404);
-        }
+        $this->isAble('replace', $ticket);
 
         $ticket->update($request->mappedAttributes());
         return new TicketResource($ticket);
     }
 
-    public function update(UpdateTicketRequest $request, Ticket $ticket)
+    public function update(UpdateTicketRequest $request, $author_id, Ticket $ticket)
     {
+        $this->isAble('update', $ticket);
+
         $ticket->update($request->mappedAttributes());
         return new TicketResource($ticket);
     }
 
     public function destroy($author_id, Ticket $ticket)
     {
-        if($ticket->user_id != $author_id) {
-            return $this->error('Ticket cannot found.', 404);
-        }
+        $this->isAble('delete', $ticket);
 
         $ticket->delete();
         return $this->ok('Ticket Deleted Successfully.');

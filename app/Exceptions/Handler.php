@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -36,6 +38,17 @@ class Handler extends ExceptionHandler
                     'message' => 'Entity not found.',
                     'status'   => 404,
                 ], 404);
+
+            }
+        });
+
+        /* Defining a custom exception handler for handling AuthorizationException & AccessDeniedHttpException */
+        $this->renderable(function (AuthorizationException|AccessDeniedHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'You are not authorized to update the resource',
+                    'status'   => 401,
+                ], 401);
 
             }
         });
