@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Models\Ticket;
+use App\Policies\V1\TicketPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Foundation\Auth\User;
 use App\Http\Filters\V1\TicketFilter;
@@ -14,7 +15,9 @@ use App\Http\Requests\API\V1\ReplaceTicketRequest;
 
 class AuthorTicketsController extends ApiController
 {
-    public function index($author_id, TicketFilter $filters)
+    protected $policyClass = TicketPolicy::class;
+
+    public function index(TicketFilter $filters, $author_id)
     {
         return TicketResource::collection(
             Ticket::where('user_id', $author_id)
@@ -23,11 +26,10 @@ class AuthorTicketsController extends ApiController
         );
     }
 
-    public function store($author_id, StoreTicketRequest $request): JsonResource|JsonResponse
+    public function store(StoreTicketRequest $request, $author_id): JsonResource|JsonResponse
     {
         $this->isAble('store', Ticket::class);
-
-        $ticket = Ticket::create($request->mappedAttributes());
+        $ticket = Ticket::create($request->mappedAttributes(['author' => 'user_id']));
         return new TicketResource($ticket);
     }
 

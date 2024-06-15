@@ -46,7 +46,7 @@ class Handler extends ExceptionHandler
         $this->renderable(function (AuthorizationException|AccessDeniedHttpException $e, $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'message' => 'You are not authorized to update the resource',
+                    'message' => 'You are not authorized.',
                     'status'   => 401,
                 ], 401);
 
