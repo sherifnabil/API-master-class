@@ -10,11 +10,12 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'type'  =>  'authors',
+            'type'  =>  'author',
             'id'    =>  $this->id,
             'attributes'    =>  [
                 'name'  =>  $this->name,
                 'email'  =>  $this->email,
+                'isManger'  =>  $this->is_manger,
                 $this->mergeWhen( $request->routeIs('authors.*'), [
                     'emailVerifiedAt'   =>  $this->email_verified_at,
                     'createdAt'   =>  $this->created_at,

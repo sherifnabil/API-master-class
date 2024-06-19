@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\API\V1;
 
-class StoreUserRequest extends BaseUserRequest
+class ReplaceUserRequest extends BaseUserRequest
 {
     public function authorize(): bool
     {
