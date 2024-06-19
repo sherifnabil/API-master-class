@@ -4,6 +4,7 @@ namespace App\Http\Requests\API\V1;
 
 use App\Permissions\V1\Abilities;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreTicketRequest extends BaseTicketRequest
 {
@@ -16,7 +17,7 @@ class StoreTicketRequest extends BaseTicketRequest
     {
         $authorIdAttr = $this->routeIs('tickets.store') ? 'data.relationships.author.data.id' : 'author';
         $authorRule = 'required|exists:users,id';
-        $user = $this->user();
+        $user = Auth::user();
 
         $rules =  [
             'data.attributes.title' =>  ['required', 'string'],
